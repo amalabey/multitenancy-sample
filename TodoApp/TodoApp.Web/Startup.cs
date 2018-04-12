@@ -25,8 +25,11 @@ namespace TodoApp.Web
         {
             services.AddMvc();
 
-            var connection = Configuration["ConnectionStrings:TenantDatabase"];
-            services.AddDbContext<TodoDataContext>(options => options.UseSqlServer(connection));
+            var configDbConnection = Configuration["ConnectionStrings:ConfigDatabase"];
+            services.AddDbContext<ConfigDbContext>(options => options.UseSqlServer(configDbConnection));
+
+            var tenantDbConnection = Configuration["ConnectionStrings:TenantDatabase"];
+            services.AddDbContext<TodoDataContext>(options => options.UseSqlServer(tenantDbConnection));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
