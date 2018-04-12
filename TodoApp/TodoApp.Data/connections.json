@@ -1,5 +1,0 @@
-﻿{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=.\\sqlexpress;Database=todo-contoso-db;Trusted_Connection=True;"
-  }
-}

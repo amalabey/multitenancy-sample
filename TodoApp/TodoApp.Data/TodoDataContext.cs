@@ -5,12 +5,12 @@ using System.Text;
 
 namespace TodoApp.Data
 {
-    public class TaskDataContext: DbContext
+    public class TodoDataContext: DbContext
     {
-        public TaskDataContext(DbContextOptions<TaskDataContext> options)
+        public TodoDataContext(DbContextOptions<TodoDataContext> options)
             :base(options)
         { }
 
-        public DbSet<Task> Tasks { get; set; }
+        public DbSet<TodoItem> TodoItems { get; set; }
     }
 }
