@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Dotnettency;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TodoApp.Data;
+using TodoApp.Web.Multitenancy;
 
 namespace TodoApp.Web
 {
@@ -21,20 +24,48 @@ namespace TodoApp.Web
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
 
+            // Register config database
             var configDbConnection = Configuration["ConnectionStrings:ConfigDatabase"];
             services.AddDbContext<ConfigDbContext>(options => options.UseSqlServer(configDbConnection));
 
-            var tenantDbConnection = Configuration["ConnectionStrings:TenantDatabase"];
-            services.AddDbContext<TodoDataContext>(options => options.UseSqlServer(tenantDbConnection));
+            return services.AddAspNetCoreMultiTenancy<Tenant>((multiTenantOptions) =>
+            {
+                multiTenantOptions
+                    .DistinguishTenantsWith<SubDomainTenantDistinguisherFactory>()
+                    .InitialiseTenant<TenantShellFactory>()
+                    .ConfigureTenantContainers((containerBuilder) =>
+                    {
+                        containerBuilder
+                        .WithStructureMap((tenant, tenantServices) =>
+                        {
+                            // Configure tenant specific services
+                            var connectionBuilder = new SqlConnectionStringBuilder
+                            {
+                                DataSource = tenant.TenantDbHost,
+                                InitialCatalog = tenant.TenantDbName,
+                                UserID = tenant.TenantDbUser,
+                                Password = tenant.TenantDbPassword
+                            };
+                            tenantServices.AddDbContext<TodoDataContext>(options => options.UseSqlServer(connectionBuilder.ToString()));
+                        })
+                        .AddPerRequestContainerMiddlewareServices();
+                    });
+            });
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseMultitenancy<Tenant>((options) =>
+            {
+                options.UsePerTenantContainers();
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseBrowserLink();

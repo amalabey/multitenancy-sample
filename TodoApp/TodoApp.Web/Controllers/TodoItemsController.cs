@@ -12,15 +12,18 @@ namespace TodoApp.Web.Controllers
     public class TodoItemsController : Controller
     {
         private readonly TodoDataContext _context;
+        private readonly Tenant _tenant;
 
-        public TodoItemsController(TodoDataContext context)
+        public TodoItemsController(TodoDataContext context, Task<Tenant> tenantTask)
         {
             _context = context;
+            _tenant = tenantTask.Result;
         }
 
         // GET: TodoItems
         public async Task<IActionResult> Index()
         {
+            ViewData["TenantName"] = _tenant.Name;
             return View(await _context.TodoItems.ToListAsync());
         }
 

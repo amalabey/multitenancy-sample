@@ -8,6 +8,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using StructureMap.AspNetCore;
 
 namespace TodoApp.Web
 {
@@ -20,6 +21,7 @@ namespace TodoApp.Web
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .UseStructureMap()
                 .UseStartup<Startup>()
                 .UseKestrel(options =>
                 {
