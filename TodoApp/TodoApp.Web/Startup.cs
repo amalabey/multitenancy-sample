@@ -62,7 +62,19 @@ namespace TodoApp.Web
                                 tenantServices.AddSingleton<IEditionProvider, StandardEditionProvider>();
                             }
                         })
-                        .AddPerRequestContainerMiddlewareServices();
+                        .AddPerRequestContainerMiddlewareServices()
+                        .AddPerTenantMiddlewarePipelineServices();
+                    })
+                    .ConfigureTenantMiddleware((configureOptions) =>
+                    {
+                        configureOptions.OnInitialiseTenantPipeline((tenantContext, appBuilder) =>
+                        {
+                            var tenant = tenantContext.Tenant;
+                            if(tenant.Subdomain == "northwind")
+                            {
+                                appBuilder.UseWelcomePage();
+                            }
+                        });
                     });
             });
             
@@ -74,6 +86,7 @@ namespace TodoApp.Web
             app.UseMultitenancy<Tenant>((options) =>
             {
                 options.UsePerTenantContainers();
+                options.UsePerTenantMiddlewarePipeline();
             });
 
             if (env.IsDevelopment())
