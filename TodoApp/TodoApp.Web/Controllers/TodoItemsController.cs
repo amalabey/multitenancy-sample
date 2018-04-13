@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TodoApp.Data;
+using TodoApp.Web.Services;
 
 namespace TodoApp.Web.Controllers
 {
@@ -13,17 +14,20 @@ namespace TodoApp.Web.Controllers
     {
         private readonly TodoDataContext _context;
         private readonly Tenant _tenant;
+        private readonly IEditionProvider _editionProvider;
 
-        public TodoItemsController(TodoDataContext context, Task<Tenant> tenantTask)
+        public TodoItemsController(TodoDataContext context, Task<Tenant> tenantTask, IEditionProvider editionProvider)
         {
             _context = context;
             _tenant = tenantTask.Result;
+            _editionProvider = editionProvider;
         }
 
         // GET: TodoItems
         public async Task<IActionResult> Index()
         {
             ViewData["TenantName"] = _tenant.Name;
+            ViewData["Edition"] = _editionProvider.GetEdition();
             return View(await _context.TodoItems.ToListAsync());
         }
 

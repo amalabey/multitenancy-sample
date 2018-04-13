@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TodoApp.Data;
 using TodoApp.Web.Multitenancy;
+using TodoApp.Web.Services;
 
 namespace TodoApp.Web
 {
@@ -51,6 +52,15 @@ namespace TodoApp.Web
                                 Password = tenant.TenantDbPassword
                             };
                             tenantServices.AddDbContext<TodoDataContext>(options => options.UseSqlServer(connectionBuilder.ToString()));
+
+                            if(tenant.Subdomain == "contoso")
+                            {
+                                tenantServices.AddSingleton<IEditionProvider, EnterpriseEditionProvider>();
+                            }
+                            else
+                            {
+                                tenantServices.AddSingleton<IEditionProvider, StandardEditionProvider>();
+                            }
                         })
                         .AddPerRequestContainerMiddlewareServices();
                     });
