@@ -21,7 +21,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://contoso.localtest.me"
+      "applicationUrl": "https://contoso.localtest.me"
     }
   }
 }

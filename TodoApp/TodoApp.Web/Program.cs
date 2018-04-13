@@ -26,6 +26,10 @@ namespace TodoApp.Web
                 .UseKestrel(options =>
                 {
                     options.Listen(IPAddress.Loopback, 80);
+                    options.Listen(IPAddress.Loopback, 443, listenOptions =>
+                    {
+                        listenOptions.UseHttps("localtest.me-ssl.pfx", "1qaz2wsx@");
+                    });
                 })
                 .Build();
     }
