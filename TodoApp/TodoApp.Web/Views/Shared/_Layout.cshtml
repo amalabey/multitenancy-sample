@@ -32,6 +32,19 @@
                 <ul class="nav navbar-nav">
                     <li><a asp-area="" asp-controller="TodoItems" asp-action="Index">Home</a></li>
                 </ul>
+                @if (User.Identity.IsAuthenticated)
+                {
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="navbar-text">Hello @User.Identity.Name!</li>
+                            <li><a asp-area="" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
+                        </ul>
+                }
+                else
+                {
+                            <ul class="nav navbar-nav navbar-right">
+                                <li><a asp-area="" asp-controller="Account" asp-action="Login">Sign in</a></li>
+                            </ul>
+                }
             </div>
         </div>
     </nav>
