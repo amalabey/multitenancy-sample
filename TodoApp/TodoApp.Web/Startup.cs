@@ -39,8 +39,9 @@ namespace TodoApp.Web
             services.AddDbContext<ConfigDbContext>(options => options.UseSqlServer(configDbConnection));
 
             // To override yammer settings per tenant
-            services.AddSingleton<IAuthenticationSchemeProvider, MultiTenantAuthenticationSchemeProvider>();
-            services.AddSingleton<IOptionsFactory<YammerAuthenticationOptions>, YammerOptionsFactory>();
+            //services.AddSingleton<IAuthenticationSchemeProvider, MultiTenantAuthenticationSchemeProvider>();
+            //services.AddSingleton<IOptionsFactory<YammerAuthenticationOptions>, YammerOptionsFactory>();
+            services.AddSingleton<IOptionsMapper<YammerAuthenticationOptions>, YammerOptionsMapper>();
             services.AddSingleton<IOptionsMonitorCache<YammerAuthenticationOptions>, MultiTenantOptionsCache<YammerAuthenticationOptions>>();
 
             // Add Yammer authentication

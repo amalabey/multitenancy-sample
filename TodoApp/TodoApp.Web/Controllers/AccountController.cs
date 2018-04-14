@@ -15,7 +15,7 @@ namespace TodoApp.Web.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            var redirectUrl = Url.Action(nameof(TodoItemsController.Index), "Home");
+            var redirectUrl = Url.Action(nameof(TodoItemsController.Index), "Index");
             return Challenge(
                 new AuthenticationProperties { RedirectUri = redirectUrl }, "Yammer");
         }

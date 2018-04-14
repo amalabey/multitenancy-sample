@@ -13,13 +13,16 @@ namespace TodoApp.Web.Auth
     {
         private readonly IHttpContextAccessor contextAccessor;
         private readonly IPostConfigureOptions<TOptions> postConfig;
+        private readonly IOptionsMapper<TOptions> mapper;
         private IDictionary<string, TOptions> cache;
 
         public MultiTenantOptionsCache(IHttpContextAccessor contextAccessor,
-            IPostConfigureOptions<TOptions> postConfig)
+            IPostConfigureOptions<TOptions> postConfig,
+            IOptionsMapper<TOptions> mapper)
         {
             this.contextAccessor = contextAccessor;
             this.postConfig = postConfig;
+            this.mapper = mapper;
             this.cache = new Dictionary<string, TOptions>();
         }
 
@@ -43,7 +46,23 @@ namespace TodoApp.Web.Auth
             }
             else
             {
-                TOptions options = createOptions();
+                TOptions options = null;
+                var tenant = this.contextAccessor.HttpContext.RequestServices.GetRequiredService<Tenant>();
+                if (tenant != null)
+                {
+                    options = this.mapper.CreateOptions(name, tenant);
+                    this.postConfig.PostConfigure(name, options);
+                }
+                else
+                {
+                    options = createOptions();
+                }
+
+                if (options == null)
+                {
+                    throw new Exception("Unable to create options for the current tenant");
+                }
+
                 this.cache.Add(key, options);
                 return options;
             }
@@ -101,7 +120,7 @@ namespace TodoApp.Web.Auth
             var tenant = this.contextAccessor.HttpContext.RequestServices.GetRequiredService<Tenant>();
             if (tenant != null)
             {
-                key = $"{scheme}@{tenant.Subdomain}".ToLowerInvariant();
+                key = $"{scheme}@{tenant.Name}".ToLowerInvariant();
             }
 
             return key;
