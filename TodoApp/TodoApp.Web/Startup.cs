@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNet.Security.OAuth.Yammer;
 using Dotnettency;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using TodoApp.Data;
+using TodoApp.Web.Auth;
 using TodoApp.Web.Multitenancy;
 using TodoApp.Web.Services;
 
@@ -32,7 +37,22 @@ namespace TodoApp.Web
             // Register config database
             var configDbConnection = Configuration["ConnectionStrings:ConfigDatabase"];
             services.AddDbContext<ConfigDbContext>(options => options.UseSqlServer(configDbConnection));
-                        
+
+            // To override yammer settings per tenant
+            services.AddSingleton<IAuthenticationSchemeProvider, MultiTenantAuthenticationSchemeProvider>();
+            services.AddSingleton<IOptionsFactory<YammerAuthenticationOptions>, YammerOptionsFactory>();
+            services.AddSingleton<IOptionsMonitorCache<YammerAuthenticationOptions>, MultiTenantOptionsCache<YammerAuthenticationOptions>>();
+
+            // Add Yammer authentication
+            services.AddAuthentication(options => options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie()
+                .AddYammer("Yammer", options =>
+                {
+                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.ClientId = "xxxxxx";
+                    options.ClientSecret = "xxxxxxx";
+                });
+
             return services.AddAspNetCoreMultiTenancy<Tenant>((multiTenantOptions) =>
             {
                 multiTenantOptions
@@ -69,6 +89,8 @@ namespace TodoApp.Web
                     {
                         configureOptions.OnInitialiseTenantPipeline((tenantContext, appBuilder) =>
                         {
+                            appBuilder.UseAuthentication();
+
                             var tenant = tenantContext.Tenant;
                             if(tenant.Subdomain == "northwind")
                             {
@@ -83,21 +105,13 @@ namespace TodoApp.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseDeveloperExceptionPage();
+
             app.UseMultitenancy<Tenant>((options) =>
             {
                 options.UsePerTenantContainers();
                 options.UsePerTenantMiddlewarePipeline();
             });
-
-            if (env.IsDevelopment())
-            {
-                app.UseBrowserLink();
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
 
             app.UseStaticFiles();
 
