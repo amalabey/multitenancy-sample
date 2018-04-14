@@ -32,7 +32,7 @@ namespace TodoApp.Web
             // Register config database
             var configDbConnection = Configuration["ConnectionStrings:ConfigDatabase"];
             services.AddDbContext<ConfigDbContext>(options => options.UseSqlServer(configDbConnection));
-
+                        
             return services.AddAspNetCoreMultiTenancy<Tenant>((multiTenantOptions) =>
             {
                 multiTenantOptions

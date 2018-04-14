@@ -13,5 +13,7 @@ namespace TodoApp.Data
         public string TenantDbName { get; set; }
         public string TenantDbUser { get; set; }
         public string TenantDbPassword { get; set; }
+        public string ClientId { get; set; }
+        public string ClientSecret { get; set; }
     }
 }
