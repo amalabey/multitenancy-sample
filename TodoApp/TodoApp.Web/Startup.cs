@@ -4,9 +4,13 @@ using Dotnettency;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TodoApp.Data;
+using TodoApp.Data.Compatibility;
 using TodoApp.Web.Multitenancy;
 using TodoApp.Web.Services;
 
@@ -48,7 +52,16 @@ namespace TodoApp.Web
                                 UserID = tenant.TenantDbUser,
                                 Password = tenant.TenantDbPassword
                             };
-                            tenantServices.AddDbContext<TodoDataContext>(options => options.UseSqlServer(connectionBuilder.ToString()));
+
+                            tenantServices.AddTransient(sp => tenant);
+                            tenantServices.AddTransient<IModelCacheKeyFactory, PerSchemaVersionModelCacheKeyFactory>();
+
+                            tenantServices
+                            .AddEntityFrameworkSqlServer()
+                            .AddDbContext<TodoDataContext>((sp, options) => options
+                                .UseSqlServer(connectionBuilder.ToString())
+                                .ReplaceService<IModelCacheKeyFactory, PerSchemaVersionModelCacheKeyFactory>()
+                            );
 
                             if(tenant.Subdomain == "contoso")
                             {
