@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TodoApp.Data
+﻿namespace TodoApp.Data
 {
     public class Tenant
     {
@@ -13,5 +9,6 @@ namespace TodoApp.Data
         public string TenantDbName { get; set; }
         public string TenantDbUser { get; set; }
         public string TenantDbPassword { get; set; }
+        public int SchemaVersion { get; set; }
     }
 }
