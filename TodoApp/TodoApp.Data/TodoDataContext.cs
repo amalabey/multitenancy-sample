@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TodoApp.Data.Compatibility;
 
 namespace TodoApp.Data
 {
@@ -12,7 +13,7 @@ namespace TodoApp.Data
             _tenant = tenant;
         }
 
-        public int SchemaVersion 
+        public int SchemaVersion
         {
             get
             {
@@ -21,5 +22,12 @@ namespace TodoApp.Data
         }
 
         public DbSet<TodoItem> TodoItems { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            var modelBinderFactory = new VersionedModelBinderFactory();
+            var modelBinder = modelBinderFactory.CreateBinder(_tenant.SchemaVersion);
+            modelBinder.BindModel(modelBuilder);
+        }
     }
 }
