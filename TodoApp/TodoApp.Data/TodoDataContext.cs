@@ -36,6 +36,7 @@ namespace TodoApp.Data
                 b.Property<string>("Description");
                 b.Property<string>("Assignee");
                 b.Property<bool>("IsComplete");
+                b.Property<int>("StoryId").IsRequired();
                 b.HasKey("Id");
                 b.ToTable("TodoItems");
             });

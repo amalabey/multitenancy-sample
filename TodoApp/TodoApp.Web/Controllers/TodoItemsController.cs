@@ -52,6 +52,7 @@ namespace TodoApp.Web.Controllers
         // GET: TodoItems/Create
         public IActionResult Create()
         {
+            ViewData["TenantSchemaVersion"] = _tenant.SchemaVersion;
             return View();
         }
 
@@ -60,7 +61,7 @@ namespace TodoApp.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,IsComplete,Description,Assignee")] TodoItem todoItem)
+        public async Task<IActionResult> Create(TodoItem todoItem)
         {
             if (ModelState.IsValid)
             {
@@ -92,7 +93,7 @@ namespace TodoApp.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,IsComplete,Description, Assignee")] TodoItem todoItem)
+        public async Task<IActionResult> Edit(int id, TodoItem todoItem)
         {
             if (id != todoItem.Id)
             {

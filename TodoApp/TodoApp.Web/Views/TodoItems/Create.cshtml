@@ -21,8 +21,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <input asp-for="Assignee" class="form-control" />
+                Descripton: <input asp-for="Description" class="form-control" />
+                Assignee: <input asp-for="Assignee" class="form-control" />
+                @if (((int)ViewData["TenantSchemaVersion"]) > SupportedSchemaVersion.V102)
+                {
+                    <input asp-for="StoryId" class="form-control" />
+                }                
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
