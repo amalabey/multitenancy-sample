@@ -60,7 +60,7 @@ namespace TodoApp.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,IsComplete,Description")] TodoItem todoItem)
+        public async Task<IActionResult> Create([Bind("Id,IsComplete,Description,Assignee")] TodoItem todoItem)
         {
             if (ModelState.IsValid)
             {
@@ -92,7 +92,7 @@ namespace TodoApp.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,IsComplete,Description")] TodoItem todoItem)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,IsComplete,Description, Assignee")] TodoItem todoItem)
         {
             if (id != todoItem.Id)
             {

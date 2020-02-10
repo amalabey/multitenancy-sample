@@ -8,7 +8,6 @@ namespace TodoApp.Data.SupportedVersions.V100
     {
         public void BindModel(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<TodoItem>().Ignore(e => e.Description);
         }
     }
 }

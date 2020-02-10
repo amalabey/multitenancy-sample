@@ -35,7 +35,7 @@ namespace TodoApp.Data.Compatibility
             }
             else
             {
-                throw new NotSupportedException($"A model binder is not available for schema version: {schemaVersion}");
+                return null;
             }
         }
     }

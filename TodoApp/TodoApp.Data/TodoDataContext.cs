@@ -29,8 +29,23 @@ namespace TodoApp.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var modelBinder = _versionedModelBinderFactory.CreateBinder(_tenant.SchemaVersion);
-            modelBinder.BindModel(modelBuilder);
+            modelBuilder.Entity("TodoApp.Data.TodoItem", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd();
+                b.Property<string>("Description");
+                b.Property<string>("Assignee");
+                b.Property<bool>("IsComplete");
+                b.HasKey("Id");
+                b.ToTable("TodoItems");
+            });
+
+            // To support backwards compatibility
+            var versionModelBinder = _versionedModelBinderFactory.CreateBinder(_tenant.SchemaVersion);
+            if(versionModelBinder != null)
+            {
+                versionModelBinder.BindModel(modelBuilder);
+            }
         }
     }
 }
