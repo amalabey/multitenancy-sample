@@ -6,10 +6,14 @@ namespace TodoApp.Data
     public class TodoDataContext : DbContext
     {
         private readonly Tenant _tenant;
+        private readonly VersionedModelBinderFactory _versionedModelBinderFactory;
 
-        public TodoDataContext(Tenant tenant, DbContextOptions<TodoDataContext> options)
+        public TodoDataContext(Tenant tenant, 
+            VersionedModelBinderFactory versionedModelBinderFactory,
+            DbContextOptions<TodoDataContext> options)
             : base(options)
         {
+            _versionedModelBinderFactory = versionedModelBinderFactory;
             _tenant = tenant;
         }
 
@@ -25,8 +29,7 @@ namespace TodoApp.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var modelBinderFactory = new VersionedModelBinderFactory();
-            var modelBinder = modelBinderFactory.CreateBinder(_tenant.SchemaVersion);
+            var modelBinder = _versionedModelBinderFactory.CreateBinder(_tenant.SchemaVersion);
             modelBinder.BindModel(modelBuilder);
         }
     }

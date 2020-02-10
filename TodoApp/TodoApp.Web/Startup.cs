@@ -54,6 +54,7 @@ namespace TodoApp.Web
                             };
 
                             tenantServices.AddTransient(sp => tenant);
+                            tenantServices.AddTransient<VersionedModelBinderFactory, VersionedModelBinderFactory>();
                             tenantServices.AddTransient<IModelCacheKeyFactory, PerSchemaVersionModelCacheKeyFactory>();
 
                             tenantServices

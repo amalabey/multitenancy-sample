@@ -9,7 +9,7 @@ namespace TodoApp.Data.SupportedVersions.V101
         public void BindModel(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TodoItem>().Ignore(e => e.IsComplete);
-            modelBuilder.Entity<TodoItem>().Property(p => p.IsComplete).HasDefaultValue(false);
+            modelBuilder.Entity<TodoItem>().Property(p => p.IsComplete).HasDefaultValue(true);
         }
     }
 }
